@@ -9,7 +9,6 @@ my_fruit_list = pandas.read_csv("https://uni-lab-files.s3.us-west-2.amazonaws.co
 
 
 # for streamlit to display it on the application we call (for ex to display the fruits dataframe)
-
 streamlit.title('My Parents New Healthy Diner')
 streamlit.header('Breakfast Menu')
 streamlit.text('🥣 Omega 3 & Blueberry Oatmeal')
@@ -26,9 +25,6 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 # Display the table on the page.
 streamlit.dataframe(fruits_to_show)
 
-# New section
-streamlit.header("Fruityvice Fruit Advice!")
-
 
 ##import requests
 #fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + "kiwi")
@@ -40,18 +36,20 @@ streamlit.header("Fruityvice Fruit Advice!")
 
 
 # New section to display fruityvice api respone
+streamlit.header("Fruityvice Fruit Advice!")
+try:
+  fruit_choice = streamlit.text_input('What fruit would you like information about?','Kiwi')
+  if not fruit_choice:
+    streamlit.error("Please select a fruit to get information.")
+  else:
+    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+    fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+    streamlit.dataframe(fruityvice_normalized)
 
-fruit_choice = streamlit.text_input('What fruit would you like information about?','Kiwi')
-streamlit.write('The user entered ', fruit_choice)
-
-# import request
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
-
-# normalize the json version 
-fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-# output it screen as a table
-streamlit.dataframe(fruityvice_normalized)
-
+   
+except URLError as e:
+  streamlit.error()
+  
 # don't run anything past here while we troubleshoot
 streamlit.stop()
 
